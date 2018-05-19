@@ -4,12 +4,21 @@
 #include <vds_swap.h>
 
 void vds_swap_byte(void * a, void * b, void * t) {
+  if (a == b) {
+    return;
+  }
   *((char *) t) = *((char *) a);
   *((char *) a) = *((char *) b);
   *((char *) b) = *((char *) t);
 }
 
 void vds_swap_bytes(void * a, void * b, size_t const s) {
+  if (a == b) {
+    return;
+  }
+  if (s == 0LLU) {
+    return;
+  }
   char * const t = malloc(sizeof (char));
   if (t == NULL) {
     exit(EXIT_FAILURE);
@@ -23,12 +32,24 @@ void vds_swap_bytes(void * a, void * b, size_t const s) {
 }
 
 void vds_swap_word(void * const a, void * const b, size_t const s, void * const t) {
+  if (a == b) {
+    return;
+  }
+  if (s == 0LLU) {
+    return;
+  }
   memcpy(t, a, s);
   memcpy(a, b, s);
   memcpy(b, t, s);
 }
 
 void vds_swap_words(void * a, void * b, size_t const s, size_t const c) {
+  if (a == b) {
+    return;
+  }
+  if (s == 0LLU) {
+    return;
+  }
   void * const t = malloc(s);
   if (t == NULL) {
     exit(EXIT_FAILURE);
@@ -42,13 +63,23 @@ void vds_swap_words(void * a, void * b, size_t const s, size_t const c) {
 }
 
 void vds_swap_block(void * const a, void * const b, size_t const s) {
-  size_t const word_s = sizeof (long);
-  size_t const word_c = s / word_s;
-  if (word_c > 0LLU) {
-    vds_swap_words(a, b, word_s, word_c);
+  if (a == b) {
+    return;
   }
-  size_t const byte_c = s % word_s;
-  if (byte_c > 0LLU) {
-    vds_swap_bytes(a, b, byte_c);
+  if (s == 0LLU) {
+    return;
+  }
+  size_t const word_s = sizeof (long);
+  {
+    size_t const word_c = s / word_s;
+    if (word_c > 0LLU) {
+      vds_swap_words(a, b, word_s, word_c);
+    }
+  }
+  {
+    size_t const byte_c = s % word_s;
+    if (byte_c > 0LLU) {
+      vds_swap_bytes(a, b, byte_c);
+    }
   }
 }

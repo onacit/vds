@@ -32,8 +32,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #add_library(vdsic src/main/c/vds_utils.c src/main/c/vds_array.c)
 
 file(GLOB_RECURSE MAIN_SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "src/main/c/*.c")
-add_library(vdsic ${MAIN_SOURCES})
-target_include_directories(vdsic PRIVATE src/main/h)
+add_library(vds ${MAIN_SOURCES})
+target_include_directories(vds PRIVATE src/main/h)
 
 #find_package(PkgConfig)
 #pkg_check_modules(GTEST REQUIRED gtest>=1.7.0)

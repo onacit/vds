@@ -75,3 +75,23 @@ void vds_array_sort_selection(void * const array, size_t const size,
     }
   }
 }
+
+void a() {
+}
+
+void vds_array_sort_merge(void * const array, size_t const size,
+                          size_t const length,
+                          int (* compare)(void *, void *)) {
+  char * const limit = ((char *) array) + (size * length);
+  for (char * i = array; i < (limit - size); i += size) {
+    char * smallest = i;
+    for (char * j = (i + size); j < limit; j += size) {
+      if (compare(j, smallest) < 0) {
+        smallest = j;
+      }
+    }
+    if (smallest > i) {
+      vds_swap_block(i, smallest, size);
+    }
+  }
+}
