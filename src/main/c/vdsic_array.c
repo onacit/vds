@@ -60,31 +60,30 @@ void * vdsic_array_limit(void * restrict const offset, size_t const size,
 void vdsic_array_get(void * restrict const offset, size_t const size,
                      size_t const count, size_t const index,
                      void * const value) {
-  /*
-  if (count <= index) {
-    fprintf(stderr, "count(%zu) <= index(%zu)\n", count, index);
+  if (index >= count) {
+    return;
   }
-   */
   memcpy(value, (char*) offset + (size * index), size);
 }
 
 void vdsic_array_get_set(void * restrict const offset, size_t const size,
                          size_t const count, size_t const index,
                          void * restrict const old, void * restrict const new) {
+  if (index >= count) {
+    return;
+  }
   if (old != NULL) {
     vdsic_array_get(offset, size, count, index, old);
   }
-  /*
-  if (count <= index) {
-    fprintf(stderr, "count(%zu) <= index(%zu)\n", count, index);
-  }
-   */
   memcpy(((char *) offset) + (size * index), new, size);
 }
 
 void vdsic_array_set(void * restrict const offset, size_t const size,
                      size_t const count, size_t const index,
                      void * restrict const value) {
+  if (index >= count) {
+    return;
+  }
   vdsic_array_get_set(offset, size, count, index, NULL, value);
 }
 
@@ -108,7 +107,8 @@ void vdsic_array_shift_l(void * const offset, size_t const size,
                          size_t const count) {
   char * const limit = vdsic_array_limit(offset, size, count);
   char * s2 = offset;
-  for (char * s1 = (char *) offset + size; s1 < limit; s1 += size) {
+  char * s1 = s2 + size;
+  for (; s1 < limit; s1 += size) {
     s2 = ((char*) memcpy(s2, s1, size)) + size;
   }
 }
@@ -117,7 +117,8 @@ void vdsic_array_shift_r(void * const offset, size_t const size,
                          size_t const count) {
   char * const limit = vdsic_array_limit(offset, size, count);
   char * s2 = limit - size;
-  for (char * s1 = limit - (size * 2); s1 >= (char *) offset; s1 -= size) {
+  char * s1 = s2 - size;
+  for (; s1 >= (char *) offset; s1 -= size) {
     s2 = ((char *) memcpy(s2, s1, size)) - size;
   }
 }
@@ -132,14 +133,16 @@ void vdsic_array_delete(void * const offset, size_t const size,
 }
  */
 
-void vdsic_array_delete_l(void * offset, size_t const size,
-                          size_t count, size_t const index, void * const old) {
+void vdsic_array_delete_l(void * const offset, size_t const size,
+                          size_t const count, size_t const index,
+                          void * const old) {
+  if (index >= count) {
+    return;
+  }
   if (old != NULL) {
     vdsic_array_get(offset, size, count, index, old);
   }
-  offset = ((char *) offset) + (size * index);
-  count = count - index;
-  vdsic_array_shift_l(offset, size, count);
+  vdsic_array_shift_l(((char *) offset) + (size * index), size, count - idex);
 }
 
 void vdsic_array_delete_r(void * const offset, size_t const size,
